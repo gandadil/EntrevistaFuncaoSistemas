@@ -1,0 +1,68 @@
+﻿@using WebAtividadeEntrevista.Models;
+<div class="modal-header">
+    <h4>Beneficiários</h4>
+</div>
+<form method="post" action="/Beneficiario/Incluir">
+    <div class="row" style="position:relative">
+        <div class="col-sm-4">
+            <label for="CPF">CPF:</label>
+            <input required="required" type="text" class="form-control" id="CPF" name="CPF" value="@ViewBag.Beneficiario.CPF" placeholder="Ex.: 010.011.111-00" maxlength="14" />
+        </div>
+        <div class="col-sm-4">
+            <label for="Nome">Nome:</label>
+            <input required="required" type="text" class="form-control" id="Nome" name="Nome" value="@ViewBag.Beneficiario.Nome" placeholder="Ex.: João da Silva" maxlength="50">
+        </div>
+        <input type="hidden" id="IdCliente" name="IdCliente" value="@Url.RequestContext.RouteData.Values["Id"]" />
+        <input type="hidden" id="Id" name="Id" value="0" />
+        <div class="col-md-4" style="position:absolute;bottom:0;right:0">
+            <button type="submit" id="btnSalvar" name="btnSalvar" class="btn btn-success">Incluir</button>
+        </div>
+    </div>
+    @Html.ValidationSummary(false, "", new { @class = "error" })
+</form>
+<div class="row">
+    <table class="table table-hover">
+        <thead>
+            <tr>
+                <th>CPF</th>
+                <th>Nome</th>
+                <th></th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (BeneficiarioModel beneficiario in ViewBag.Beneficiarios)
+            {
+            <tr id="linha@(beneficiario.Id)">
+                <td id="CPF@(beneficiario.Id)">@beneficiario.CPF</td>
+                <td id="Nome@(beneficiario.Id)">@beneficiario.Nome</td>
+                <td><button id="alterar@(beneficiario.Id)" name="alterar@(beneficiario.Id)" class="btn btn-primary" onclick="alterar(@beneficiario.Id)">Alterar</button></td>
+                <td><button id="excluir@(beneficiario.Id)" name="excluir@(beneficiario.Id)" class="btn btn-primary" onclick="excluir(@beneficiario.Id)">Excluir</button></td>
+            </tr>
+            }
+        </tbody>
+    </table>
+</div>
+<div class="row">
+    @Html.ActionLink("Voltar", "Alterar", "Cliente", new { id = Url.RequestContext.RouteData.Values["Id"] }, new { @class = "btn btn-default pull-right"})
+</div>
+
+<script type="text/javascript">
+    function excluir(beneficiarioId) {
+        var url = "@Url.Action("Excluir", "Beneficiario")";
+        $.post(url, { id: beneficiarioId }, function (response) {
+            $("#linha" + beneficiarioId).closest('tr').remove();
+            $("#Id").val("0");
+        });
+    }
+    function removeLinha(resposta) {
+        $("#linha" + respostaID).closest('tr').remove();
+        $("#Id").val("0");
+    }
+    function alterar(beneficiarioId) {
+        $("#CPF").val($("#CPF" + beneficiarioId).html());
+        $("#Nome").val($("#Nome" + beneficiarioId).html());
+        $("#Id").val(beneficiarioId);
+        $("#btnSalvar").html("Atualizar");
+    }
+</script>
